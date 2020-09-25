@@ -1,0 +1,141 @@
+apiVersion: devops.kubesphere.io/v1alpha1
+kind: S2iBuilderTemplate
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    builder-type.kubesphere.io/s2i: "s2i"
+    # builder-type.kubesphere.io/b2i: "b2i"
+    binary-type.kubesphere.io: "dll"
+  annotations:
+    descriptionCN: "dotnet core 应用的构建器模版。通过该模版可构建出直接运行的应用镜像。"
+    descriptionEN: "This is a builder template for .net core builds whose result can be run directly without any further application server.It's suited ideally for microservices."
+    devops.kubesphere.io/s2i-template-url: https://github.com/kubesphere/s2i-dotnet-container/blob/master/java/images
+  name: dotnet
+spec:
+  containerInfo:
+    - builderImage: yanyan45/dotnet-2.1-centos7:latest
+      # runtimeImage: yanyan45/dotnet-2.1-runtime:latest
+      # runtimeArtifacts:
+      #   - source: "/deployments"
+      # buildVolumes: ["s2i_dotnet_cache:/tmp/artifacts"]
+    - builderImage: yanyan45/dotnet-31-centos7:latest
+      # runtimeImage: yanyan45/dotnet-31-runtime-centos7:latest
+      # runtimeArtifacts:
+      #   - source: "/deployments"
+      # buildVolumes: ["s2i_dotnet_cache:/tmp/artifacts"]
+  environment:
+    - key: DOTNET_STARTUP_PROJECT
+      type: string
+      description: "Used to select the project to run. This must be a project file (e.g. csproj, fsproj) or a folder containing a single project file. Defaults to ."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_ASSEMBLY_NAME
+      type: string
+      description: "Used to select the assembly to run. This must NOT include the .dll extension. Set this to the output assembly name specified in the project file (PropertyGroup/AssemblyName). This defaults to the project filename."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_PUBLISH_READYTORUN
+      type: string
+      description: "When set to true, the application will be compiled ahead-of-time. This reduces startup time by reducing the amount of work the JIT needs to do when the application is loading. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_RESTORE_SOURCES
+      type: string
+      description: "Used to specify the list of NuGet package sources used during the restore operation. This overrides all of the sources specified in the NuGet.config file. This variable cannot be combined with DOTNET_RESTORE_CONFIGFILE."
+      required: false
+      defaultValue: "Specifies a NuGet.Config file to be used for restore operations. This variable cannot be combined with DOTNET_RESTORE_SOURCES."
+    - key: DOTNET_RESTORE_CONFIGFILE
+      type: string
+      description: ""
+      required: false
+      defaultValue: ""
+    - key: DOTNET_RESTORE_DISABLE_PARALLEL
+      type: string
+      description: "When set to true disables restoring multiple projects in parallel. This reduces restore timeout errors when the build container is running with low cpu limits. Defaults to false."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_TOOLS
+      type: string
+      description: "Used to specify a list of .NET tools to install before building the app. It is possible to install a specific version by postpending the package name with @<version>. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_NPM_TOOLS
+      type: string
+      description: "Used to specify a list of npm packages to install before building the app. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_TEST_PROJECTS
+      type: string
+      description: "Used to specify the list of test projects to run. This must be project files or folders containing a single project file. dotnet test is invoked for each item. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_VERBOSITY
+      type: string
+      description: "Used to specify the verbosity of the dotnet build commands. When set, the environment variables are printed at the start of the build. This variable can be set to one of the msbuild verbosity values (q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]). Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_CONFIGURATION
+      type: string
+      description: "Used to run the application in Debug or Release mode. This should be either Release or Debug. This is passed to the dotnet publish invocation. Defaults to Release."
+      required: false
+      defaultValue: ""
+    - key: ASPNETCORE_URLS
+      type: string
+      description: "This variable is set to http://*:8080 to configure ASP.NET Core to use the port exposed by the image."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_RM_SRC
+      type: string
+      description: "When set to true, the source code will not be included in the image. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_INCREMENTAL
+      type: string
+      description: "When set to true, the NuGet packages will be kept so they can be re-used for an incremental build. Defaults to false."
+      required: false
+      defaultValue: ""
+    - key: NPM_MIRROR
+      type: string
+      description: "Use a custom NPM registry mirror to download packages during the build process."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_STARTUP_ASSEMBLY
+      type: string
+      description: "Used to specify the path of the entrypoint assembly within the source repository. When set, the source repository must contain a pre-built application. Defaults to ``."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_PACK
+      type: string
+      description: "When set to true creates a tar.gz file at /opt/app-root/app.tar.gz that contains the published application."
+      required: false
+      defaultValue: ""
+    - key: DEV_MODE
+      type: string
+      description: "When set to true, the application restart automatically when the source code changes. dotnet run is used to start the application."
+      required: false
+      defaultValue: ""
+    - key: DOTNET_USE_POLLING_FILE_WATCHER
+      type: string
+      description: "This is set to true to ensure the dotnet watch command works in a container. This command is not used by the default scripts."
+      required: false
+      defaultValue: ""
+    - key: HTTP_PROXY
+      type: string
+      description: "The URL of the proxy server that translates into the http.proxyHost and http.proxyPort system properties."
+      required: false
+      defaultValue: ""
+    - key: HTTPS_PROXY
+      type: string
+      description: "The URL of the proxy server that translates into the https.proxyHost and https.proxyPort system properties."
+      required: false
+      defaultValue: ""
+    - key: NO_PROXY
+      type: string
+      description: "The list of hosts that should be reached directly, bypassing the proxy, that translates into the http.nonProxyHosts system property."
+      required: false
+      defaultValue: ""
+  codeFramework: dotnet
+  defaultBaseImage: yanyan45/dotnet-2.1-centos7:latest
+  version: 0.0.1
+  description: "This is a builder template for dotnet core builds whose result can be run directly without any further application server.It's suited ideally for microservices."
+  iconPath: assets/java.png
